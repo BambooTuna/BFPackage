@@ -55,7 +55,7 @@ class StreamActor(channelName: StreamChannel) extends Actor {
         }
       } yield r
 
-      if (result.isRight) context.parent ! result
+      if (result.isRight) context.parent ! result.right.get
       else self ! InternalException(JsonParseException())
     case InternalException(e) => throw e
     case other => logger.info(other.toString)
