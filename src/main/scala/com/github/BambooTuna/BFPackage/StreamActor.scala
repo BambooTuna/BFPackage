@@ -19,7 +19,7 @@ import io.circe._
 import io.circe.syntax._
 import io.circe.generic.auto._
 
-class StreamActor(channelName: StreamChannel) extends Actor {
+class StreamActor(channelName: StreamChannel, debug: Boolean = false) extends Actor {
 
   implicit val system: ActorSystem = context.system
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -30,13 +30,16 @@ class StreamActor(channelName: StreamChannel) extends Actor {
 
   override def preStart() = {
     super.preStart()
+    if (debug) logger.debug(s"preStart channelName: $channelName")
     webSocketManager ! ConnectStart
   }
 
   def receive = {
     case ConnectedSucceeded(ws) =>
+      if (debug) logger.debug("ConnectedSucceeded")
       ws ! SendMessage(subscribeMessage)
     case OnMessage(m) =>
+      if (debug) logger.debug(m)
       val result = for {
         json <- parser.parse(m)
         channelName <- json.hcursor.downField("params").downField("channel").as[StreamChannel]
@@ -57,8 +60,12 @@ class StreamActor(channelName: StreamChannel) extends Actor {
 
       if (result.isRight) context.parent ! result.right.get
       else self ! InternalException(JsonParseException())
-    case InternalException(e) => throw e
-    case other => logger.info(other.toString)
+    case InternalException(e) =>
+      if (debug) logger.debug(e.getMessage)
+      throw e
+    case other =>
+      if (debug) logger.debug(other.toString)
+      logger.info(other.toString)
   }
 
   private val subscribeMessage = {
