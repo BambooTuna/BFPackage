@@ -19,7 +19,7 @@ import io.circe._
 import io.circe.syntax._
 import io.circe.generic.auto._
 
-class StreamActor(channelName: String) extends Actor {
+class StreamActor(channelName: StreamChannel) extends Actor {
 
   implicit val system: ActorSystem = context.system
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -60,7 +60,7 @@ class StreamActor(channelName: String) extends Actor {
   private val subscribeMessage = {
     case class Channel(channel: String)
     case class SubscribeLightningExecutions(method: String, params: Channel)
-    SubscribeLightningExecutions("subscribe", Channel(channelName)).asJson.noSpaces
+    SubscribeLightningExecutions("subscribe", Channel(channelName.value)).asJson.noSpaces
   }
 
   override def supervisorStrategy = OneForOneStrategy() {
