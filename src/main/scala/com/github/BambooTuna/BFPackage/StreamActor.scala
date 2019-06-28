@@ -37,10 +37,10 @@ class StreamActor(channelName: StreamChannel) extends Actor {
     case ConnectedSucceeded(ws) =>
       ws ! SendMessage(subscribeMessage)
     case OnMessage(m) =>
-      for {
+      val result = for {
         json <- parser.parse(m)
         channelName <- json.hcursor.downField("params").downField("channel").as[StreamChannel]
-        result <- channelName match {
+        r <- channelName match {
           case Executions_FX => json.hcursor.downField("params").downField("message").as[Seq[Execution]].right.map(LightningExecutions)
           case Executions_Spot => json.hcursor.downField("params").downField("message").as[Seq[Execution]].right.map(LightningExecutions)
 
@@ -53,7 +53,11 @@ class StreamActor(channelName: StreamChannel) extends Actor {
           case Board_snapshot_FX => json.hcursor.downField("params").downField("message").as[LightningBoardSnapshot]
           case Board_snapshot_Spot => json.hcursor.downField("params").downField("message").as[LightningBoardSnapshot]
         }
-      } yield result
+      } yield r
+
+      if (result.isRight) context.parent ! result
+      else self ! InternalException(JsonParseException())
+    case InternalException(e) => throw e
     case other => logger.info(other.toString)
   }
 
@@ -105,5 +109,8 @@ object StreamActor {
   case class LightningBoard(mid_price: Long, bids: Seq[Board], asks: Seq[Board]) extends StreamData
   case class LightningBoardSnapshot(mid_price: Long, bids: Seq[Board], asks: Seq[Board]) extends StreamData
 
+
+  case class InternalException(e: Exception)
+  case class JsonParseException() extends Exception()
 }
 
