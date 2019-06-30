@@ -56,7 +56,7 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
     case other => logger.info(other.toString)
   }
 
-  val getMyPositionsTask = {
+  def getMyPositionsTask = {
     import scala.concurrent.ExecutionContextExecutor
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
