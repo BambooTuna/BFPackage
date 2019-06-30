@@ -22,7 +22,7 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
   implicit val system: ActorSystem             = context.system
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   val logger                                   = LoggerFactory.getLogger(getClass)
-  val debug = options.debug
+  val debug                                    = options.debug
 
   override def preStart() = {
     super.preStart()
