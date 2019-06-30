@@ -20,6 +20,11 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   val logger                                   = LoggerFactory.getLogger(getClass)
 
+  override def preStart() = {
+    super.preStart()
+    self ! GetPosition
+  }
+
   def receive = {
     case GetPosition =>
       getMyPositionsTask.runToFuture.onComplete {
