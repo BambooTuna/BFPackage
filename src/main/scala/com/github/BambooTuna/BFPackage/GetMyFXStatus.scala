@@ -22,6 +22,7 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
   implicit val system: ActorSystem             = context.system
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   val logger                                   = LoggerFactory.getLogger(getClass)
+  val debug = options.debug
 
   override def preStart() = {
     super.preStart()
@@ -32,6 +33,7 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
     case GetPosition =>
       getMyPositionsTask.runToFuture.onComplete {
         case Success(value) =>
+          if (debug) logger.debug(value.toString)
           value.fold(
             e => self ! InternalError(e.bodyString),
             r =>
@@ -42,8 +44,12 @@ class GetMyFXStatus(api: BitflyerRestAPIs, options: GMFSOptions = GMFSOptions())
           Thread.sleep(options.positionInterval.toMillis)
           self ! GetPosition
         case Failure(exception) =>
+          if (debug) logger.debug(exception.getMessage)
           self ! InternalError(exception.getMessage)
       }
+    case v: PositionData =>
+      if (debug) logger.debug(v.toString)
+      context.parent ! v
     case InternalError(e) =>
       Thread.sleep(options.errorInterval.toMillis)
       throw new Exception(e)
@@ -79,7 +85,8 @@ object GetMyFXStatus {
 
   case class GMFSOptions(
       positionInterval: Duration = 5.seconds,
-      errorInterval: Duration = 5.seconds
+      errorInterval: Duration = 5.seconds,
+      debug: Boolean = false
   )
 
   sealed trait Command
