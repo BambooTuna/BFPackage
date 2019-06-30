@@ -1,16 +1,19 @@
 package com.github.BambooTuna.BFPackage
 
-import akka.actor.{Actor, ActorSystem}
+import akka.actor.{ Actor, ActorSystem }
 import akka.stream.ActorMaterializer
 import com.github.BambooTuna.BFPackage.GetMyFXStatus._
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{BitflyerEnumDefinition, GetMyPositionsQueryParameters}
+import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{
+  BitflyerEnumDefinition,
+  GetMyPositionsQueryParameters
+}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.QueryParameters
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 import io.circe.generic.auto._
 import org.slf4j.LoggerFactory
 
