@@ -1,8 +1,8 @@
 package com.github.BambooTuna.BFPackage.Notification
 
-import akka.actor.{Actor, ActorSystem}
+import akka.actor.{ Actor, ActorSystem }
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.Notification.DiscordPushActor.{DiscordPushSettings, SendNotification}
+import com.github.BambooTuna.BFPackage.Notification.DiscordPushActor.{ DiscordPushSettings, SendNotification }
 import com.github.BambooTuna.CryptoLib.restAPI.client.discord.APIList.WebhookBody
 import com.github.BambooTuna.CryptoLib.restAPI.client.discord.DiscordRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.Entity
@@ -13,21 +13,22 @@ import io.circe.generic.auto._
 
 class DiscordPushActor(discordPushSettings: DiscordPushSettings) extends Actor {
 
-  implicit val system: ActorSystem = context.system
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem                        = context.system
+  implicit val materializer: ActorMaterializer            = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-  val logger = LoggerFactory.getLogger(getClass)
+  val logger                                              = LoggerFactory.getLogger(getClass)
 
-  val api = discordPushSettings.discordRestAPIs
+  val api        = discordPushSettings.discordRestAPIs
   val botOptions = discordPushSettings.botOptions
-  val debug = discordPushSettings.debug
+  val debug      = discordPushSettings.debug
 
   def receive = {
     case SendNotification(m) => sendMessage(m)
-    case other => logger.debug(other.toString)
+    case other               => logger.debug(other.toString)
   }
 
   def sendMessage(message: String) = {
+    if (debug) logger.debug(s"SendMessage: $message")
     api.webhook.run(
       entity = Some(
         Entity(
@@ -48,8 +49,8 @@ object DiscordPushActor {
 
   case class BotOptions(name: String = "DiscordBot")
   case class DiscordPushSettings(
-                                  discordRestAPIs: DiscordRestAPIs,
-                                  botOptions: BotOptions = BotOptions(),
-                                  debug: Boolean = false
-                                )
+      discordRestAPIs: DiscordRestAPIs,
+      botOptions: BotOptions = BotOptions(),
+      debug: Boolean = false
+  )
 }
