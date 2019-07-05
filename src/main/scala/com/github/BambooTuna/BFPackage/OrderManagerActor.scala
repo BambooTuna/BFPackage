@@ -1,19 +1,20 @@
 package com.github.BambooTuna.BFPackage
 
-import akka.actor.{ Actor, ActorSystem, Props }
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor.{Actor, ActorSystem, OneForOneStrategy, Props}
 import akka.stream.ActorMaterializer
 import com.github.BambooTuna.BFPackage.OrderManagerActor.Options
-import com.github.BambooTuna.BFPackage.RealTimePositionManager.{ AddOrderId, CanceledOrderId }
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{ SimpleOrderBody, SimpleOrderResponse }
+import com.github.BambooTuna.BFPackage.RealTimePositionManager.{AddOrderId, CanceledOrderId, FetchStatus, RemindStatus}
+import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{SimpleOrderBody, SimpleOrderResponse}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.Entity
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{ ExecutionContextExecutor, Future }
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 import io.circe.generic.auto._
 
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 class OrderManagerActor(options: Options) extends Actor {
 
@@ -40,7 +41,15 @@ class OrderManagerActor(options: Options) extends Actor {
             else logger.error(s"EntryOrder: Left: ${orderResponse.left.get}")
           case Failure(exception) => logger.error(s"EntryOrder: Error: ${exception.getMessage}")
         }
-    case other => logger.debug(other.toString)
+    case v: RemindStatus => context.parent ! v
+    case FetchStatus     => realTimePositionManager ! FetchStatus
+    case other           => logger.debug(other.toString)
+  }
+
+  override def supervisorStrategy = OneForOneStrategy() {
+    case _ =>
+      Thread.sleep(5.seconds.toMillis)
+      Restart
   }
 
   def orderSuccess(request: SimpleOrderBody, response: SimpleOrderResponse): Future[Unit] = {
@@ -62,6 +71,7 @@ class OrderManagerActor(options: Options) extends Actor {
 }
 
 object OrderManagerActor {
+
   case class Options(
       api: BitflyerRestAPIs,
       debug: Boolean = false

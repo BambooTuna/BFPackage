@@ -6,10 +6,9 @@ import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList._
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.OrderStatus
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.{ ExecutionContextExecutor, Future }
 import scala.concurrent.duration._
 import scala.util.Random
-
 
 class BFServerMock(implicit system: ActorSystem) {
 
@@ -17,7 +16,7 @@ class BFServerMock(implicit system: ActorSystem) {
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
   val logger                                              = LoggerFactory.getLogger(getClass)
 
-  val order                    = scala.collection.mutable.HashMap.empty[String, SimpleOrderBody]
+  val order = scala.collection.mutable.HashMap.empty[String, SimpleOrderBody]
 
   def newOrder(request: SimpleOrderBody) =
     generateDelay
@@ -30,30 +29,33 @@ class BFServerMock(implicit system: ActorSystem) {
   def getOrders = {
     generateDelay
       .map(_ => {
-        val response: List[GetMyOrdersResponse] = order.map(o => {
-          val orderId = o._1
-          val orderData = o._2
-          GetMyOrdersResponse(
-            1L, orderId,
-            orderData.product_code,
-            orderData.side,
-            orderData.child_order_type,
-            orderData.price,
-            orderData.price,
-            orderData.size,
-            OrderStatus.ACTIVE,
-            "", "",
-            orderId,
-            0, 0, 0, 0
-          )
-        }).toList
+        val response: List[GetMyOrdersResponse] = order
+          .map(o => {
+            val orderId   = o._1
+            val orderData = o._2
+            GetMyOrdersResponse(
+              1L,
+              orderId,
+              orderData.product_code,
+              orderData.side,
+              orderData.child_order_type,
+              orderData.price,
+              orderData.price,
+              orderData.size,
+              OrderStatus.ACTIVE,
+              "",
+              "",
+              orderId,
+              0,
+              0,
+              0,
+              0
+            )
+          }).toList
         Right(response)
       })
 
-
-
   }
-
 
   private def generateDelay = {
     Future {
@@ -66,16 +68,13 @@ class BFServerMock(implicit system: ActorSystem) {
     System.currentTimeMillis.toString
   }
 
-
-
 }
-
 
 object BFServerMock {
 
   sealed trait Command
   case class NewOrderMock(request: SimpleOrderBody) extends Command
-  case class CancelOrderMock(orderId: String) extends Command
-  case object CancelAllOrderMock extends Command
+  case class CancelOrderMock(orderId: String)       extends Command
+  case object CancelAllOrderMock                    extends Command
 
 }
