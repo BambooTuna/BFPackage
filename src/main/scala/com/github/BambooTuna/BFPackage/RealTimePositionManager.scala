@@ -1,22 +1,26 @@
 package com.github.BambooTuna.BFPackage
 
 import akka.actor.SupervisorStrategy.Restart
-import akka.actor.{Actor, ActorSystem, OneForOneStrategy, Props}
+import akka.actor.{ Actor, ActorSystem, OneForOneStrategy, Props }
 import akka.stream.ActorMaterializer
 import com.github.BambooTuna.BFPackage.Protocol.StreamChannel
 import com.github.BambooTuna.BFPackage.RealTimePositionManager._
-import com.github.BambooTuna.BFPackage.StreamActor.{Execution, LightningExecutions, StreamDataError}
+import com.github.BambooTuna.BFPackage.StreamActor.{ Execution, LightningExecutions, StreamDataError }
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.Side
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{GetMyOrdersQueryParameters, GetMyPositionsQueryParameters, SimpleOrderBody}
+import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{
+  GetMyOrdersQueryParameters,
+  GetMyPositionsQueryParameters,
+  SimpleOrderBody
+}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.QueryParameters
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Await, ExecutionContextExecutor, Future}
+import scala.concurrent.{ Await, ExecutionContextExecutor, Future }
 import scala.concurrent.duration._
 import io.circe.generic.auto._
 
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 private[BFPackage] class RealTimePositionManager(options: Options) extends Actor {
 
@@ -84,10 +88,10 @@ private[BFPackage] class RealTimePositionManager(options: Options) extends Actor
           )
           .foreach(self ! _)
       }
-    case FetchStatus      => sender() ! RemindStatus(order.toMap, positionSize)
-    case InternalError(e) => throw e
+    case FetchStatus        => sender() ! RemindStatus(order.toMap, positionSize)
+    case InternalError(e)   => throw e
     case _: StreamDataError => Unit
-    case other            => logger.debug(other.toString)
+    case other              => logger.debug(other.toString)
   }
 
   override def preStart() = {

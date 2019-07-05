@@ -1,15 +1,15 @@
 package com.github.BambooTuna.BFPackage
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{ Actor, ActorSystem, Props }
 import akka.stream.ActorMaterializer
 import com.github.BambooTuna.BFPackage.RealTimePositionManager.RemindStatus
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.{OrderType, Side}
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.SimpleOrderBody
+import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.{ OrderType, Side }
+import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{ CancelAllOrderBody, SimpleOrderBody }
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.ApiKey
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.{ ExecutionContextExecutor, Future }
 
 object OrderManagerActorRootSpec extends App {
 
@@ -26,20 +26,16 @@ object OrderManagerActorRootSpec extends App {
 
 class OrderManagerActorSpec(api: BitflyerRestAPIs) extends Actor {
 
-
-
   implicit val system: ActorSystem                        = context.system
   implicit val materializer: ActorMaterializer            = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
   val logger                                              = LoggerFactory.getLogger(getClass)
 
-
-
   val orderManagerActorSpec = context.actorOf(Props(classOf[OrderManagerActor],
-                                                   OrderManagerActor.Options(
-                                                     api = api
-                                                   )),
-                                             "OrderManagerActorSpec")
+                                                    OrderManagerActor.Options(
+                                                      api = api
+                                                    )),
+                                              "OrderManagerActorSpec")
 
   def receive = {
     case RemindStatus(order, size) =>
@@ -56,7 +52,7 @@ class OrderManagerActorSpec(api: BitflyerRestAPIs) extends Actor {
     size = 0.01,
     minute_to_expire = 1L
   )
-  orderManagerActorSpec ! orderData
+  orderManagerActorSpec ! CancelAllOrderBody()
 
 //  Future {
 //    Thread.sleep(5000)
