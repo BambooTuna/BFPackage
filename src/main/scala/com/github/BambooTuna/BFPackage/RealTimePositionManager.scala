@@ -3,7 +3,7 @@ package com.github.BambooTuna.BFPackage
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor.{ Actor, ActorSystem, OneForOneStrategy, Props }
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.Protocol.StreamChannel
+import com.github.BambooTuna.BFPackage.EnumDefinition.StreamChannel
 import com.github.BambooTuna.BFPackage.RealTimePositionManager._
 import com.github.BambooTuna.BFPackage.StreamActor.{ Execution, LightningExecutions, StreamDataError }
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.Side
@@ -37,7 +37,7 @@ private[BFPackage] class RealTimePositionManager(options: Options) extends Actor
   val webSocketManager =
     context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_FX, false), "Executions_FX")
 
-  system.scheduler.schedule(1.hours, 1.hours, self, InitData)
+  system.scheduler.schedule(options.refreshInterval, options.refreshInterval, self, InitData)
 
   def receive = {
     case InitData =>
@@ -165,7 +165,7 @@ object RealTimePositionManager {
 
   case class Options(
       api: BitflyerRestAPIs,
-      debug: Boolean = false
+      refreshInterval: FiniteDuration = 1.hours
   )
 
   sealed trait Command

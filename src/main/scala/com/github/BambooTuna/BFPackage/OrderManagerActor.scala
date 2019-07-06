@@ -4,10 +4,8 @@ import akka.actor.SupervisorStrategy.Restart
 import akka.actor.{ Actor, ActorSystem, OneForOneStrategy, Props }
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.OrderManagerActor.Options
 import com.github.BambooTuna.BFPackage.RealTimePositionManager._
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList._
-import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
 import com.github.BambooTuna.CryptoLib.restAPI.model.Entity
 import org.slf4j.LoggerFactory
 
@@ -26,8 +24,7 @@ class OrderManagerActor(options: Options) extends Actor {
   val api                                                 = options.api
 
   val realTimePositionManager =
-    context.actorOf(Props(classOf[RealTimePositionManager], RealTimePositionManager.Options(options.api)),
-                    "RealTimePositionManager")
+    context.actorOf(Props(classOf[RealTimePositionManager], options), "RealTimePositionManager")
 
   def receive = {
     case orderData: SimpleOrderBody =>
@@ -104,11 +101,6 @@ class OrderManagerActor(options: Options) extends Actor {
 }
 
 object OrderManagerActor {
-
-  case class Options(
-      api: BitflyerRestAPIs,
-      debug: Boolean = false
-  )
 
   sealed trait Command
 
