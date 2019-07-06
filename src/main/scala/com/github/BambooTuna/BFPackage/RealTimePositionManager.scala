@@ -35,7 +35,7 @@ private[BFPackage] class RealTimePositionManager(options: Options) extends Actor
   val executed                 = scala.collection.mutable.ArrayBuffer.empty[ExecutedData]
 
   val webSocketManager =
-    context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_FX, false), "Executions_FX")
+    context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_FX), "Executions_FX")
 
   system.scheduler.schedule(options.refreshInterval, options.refreshInterval, self, InitData)
 
