@@ -19,7 +19,7 @@ Bitflyerで自動取引Botを作る際に必要になってくる、
 
 
 ### 注文周り
-詳細は[こちら]()を見てください。
+詳細は[こちら](https://github.com/BambooTuna/BFPackage/blob/master/src/test/scala/com/github/BambooTuna/BFPackage/OrderManagerSample.scala)を見てください。
 
 **主な機能**
 - 新規注文
@@ -32,7 +32,7 @@ Bitflyerで自動取引Botを作る際に必要になってくる、
     
 
 ### Websocket購読
-詳細は[こちら]()を見てください。
+詳細は[こちら](https://github.com/BambooTuna/BFPackage/blob/master/src/test/scala/com/github/BambooTuna/BFPackage/StreamSample.scala)を見てください。
 
 
 **主な機能**
