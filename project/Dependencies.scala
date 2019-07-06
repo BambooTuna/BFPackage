@@ -72,3 +72,11 @@ object Monix {
   val monixVersion = "3.0.0-RC2"
   val version      = "io.monix" %% "monix" % monixVersion
 }
+
+object ScalaMock {
+  val version = "org.scalamock" %% "scalamock" % "4.1.0"
+}
+
+object ScalaTest {
+  val version = "org.scalatest" %% "scalatest" % "3.0.5"
+}

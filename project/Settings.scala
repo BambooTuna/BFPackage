@@ -1,5 +1,6 @@
 import sbt.Keys._
 import sbt._
+import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport._
 
 object Settings {
   lazy val commonSettings = Seq(
@@ -21,9 +22,13 @@ object Settings {
       Config.core,
       Airframe.di,
       Monix.version,
+      ScalaTest.version       % Test,
+      ScalaMock.version       % Test,
       "com.github.BambooTuna" %% "cryptolib" % "2.1.6-SNAPSHOT",
       "com.github.BambooTuna" %% "websocketmanager" % "1.0.2-SNAPSHOT",
-    )
+    ),
+    scalafmtOnCompile in Compile := true,
+    scalafmtTestOnCompile in Compile := true
   )
 
 }
