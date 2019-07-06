@@ -1,9 +1,9 @@
 package com.github.BambooTuna.BFPackage
 
-import akka.actor.{ Actor, ActorSystem, OneForOneStrategy, Props }
+import akka.actor.{Actor, ActorSystem, OneForOneStrategy, Props}
 import akka.actor.SupervisorStrategy.Restart
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.Protocol.StreamChannel
+import com.github.BambooTuna.BFPackage.EnumDefinition.StreamChannel
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContextExecutor
@@ -28,7 +28,7 @@ class StreamActorSpec extends Actor {
   val logger                                              = LoggerFactory.getLogger(getClass)
 
   val executionsSpot =
-    context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_Spot, true), "Executions_Spot")
+    context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_Spot), "Executions_Spot")
 
   def receive = {
     case other => logger.info(other.toString)

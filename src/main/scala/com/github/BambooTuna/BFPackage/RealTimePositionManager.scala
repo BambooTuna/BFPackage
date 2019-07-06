@@ -3,7 +3,7 @@ package com.github.BambooTuna.BFPackage
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor.{ Actor, ActorSystem, OneForOneStrategy, Props }
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.Protocol.StreamChannel
+import com.github.BambooTuna.BFPackage.EnumDefinition.StreamChannel
 import com.github.BambooTuna.BFPackage.RealTimePositionManager._
 import com.github.BambooTuna.BFPackage.StreamActor.{ Execution, LightningExecutions, StreamDataError }
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.Side
