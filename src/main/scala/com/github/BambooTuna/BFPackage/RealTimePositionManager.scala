@@ -37,7 +37,7 @@ private[BFPackage] class RealTimePositionManager(options: Options) extends Actor
   val webSocketManager =
     context.actorOf(Props(classOf[StreamActor], StreamChannel.Executions_FX, false), "Executions_FX")
 
-  system.scheduler.schedule(1.hours, 1.hours, self, InitData)
+  system.scheduler.schedule(options.refreshInterval, options.refreshInterval, self, InitData)
 
   def receive = {
     case InitData =>
@@ -165,7 +165,7 @@ object RealTimePositionManager {
 
   case class Options(
       api: BitflyerRestAPIs,
-      debug: Boolean = false
+      refreshInterval: FiniteDuration = 1.hours
   )
 
   sealed trait Command
