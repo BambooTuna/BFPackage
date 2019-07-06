@@ -2,7 +2,7 @@ package com.github.BambooTuna.BFPackage
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.stream.ActorMaterializer
-import com.github.BambooTuna.BFPackage.RealTimePositionManager.RemindStatus
+import com.github.BambooTuna.BFPackage.RealTimePositionManager.{FetchStatus, RemindStatus}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.BitflyerEnumDefinition.{OrderType, Side}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.APIList.{CancelAllOrderBody, CancelOrderBody, SimpleOrderBody}
 import com.github.BambooTuna.CryptoLib.restAPI.client.bitflyer.BitflyerRestAPIs
@@ -46,6 +46,10 @@ class OrderManagerSampleActor(api: BitflyerRestAPIs) extends Actor {
     case other =>
       logger.debug(other.toString)
   }
+
+  //任意のタイミングで情報を取得することもできます。
+  //receive#RemindStatus(order, size)にデータが送られます。
+  orderManagerActorSpec ! FetchStatus
 
   //新規注文
   orderManagerActorSpec ! SimpleOrderBody(
